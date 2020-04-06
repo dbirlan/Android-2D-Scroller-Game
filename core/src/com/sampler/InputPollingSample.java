@@ -3,7 +3,7 @@ package com.sampler;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,10 +14,10 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class InputListeningSample implements ApplicationListener, InputProcessor {
+public class InputPollingSample implements ApplicationListener, InputProcessor {
 
 
-    private static final Logger log = new Logger(InputListeningSample.class.getName(), Logger.DEBUG);
+    private static final Logger log = new Logger(InputPollingSample.class.getName(), Logger.DEBUG);
 
     private static final int MAX_MESSAGE_COUNT = 15;
 
@@ -37,7 +37,14 @@ public class InputListeningSample implements ApplicationListener, InputProcessor
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("fonts/oswald-32.fnt"));
 
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(new InputAdapter(){
+            @Override
+            public boolean keyDown(int keycode) {
+                log.debug("keyDown keycode= " + keycode);
+                return true;
+            }
+
+        });
     }
 
     @Override
