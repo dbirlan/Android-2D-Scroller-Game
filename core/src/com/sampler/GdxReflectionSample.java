@@ -3,20 +3,23 @@ package com.sampler;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Field;
+import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class InputPollingSample implements ApplicationListener, InputProcessor {
+import java.util.Arrays;
 
-    private static final Logger log = new Logger(InputPollingSample.class.getName(), Logger.DEBUG);
+public class GdxReflectionSample implements ApplicationListener, InputProcessor {
+
+    private static final Logger log = new Logger(GdxReflectionSample.class.getName(), Logger.DEBUG);
 
     private static final int MAX_MESSAGE_COUNT = 15;
 
@@ -27,6 +30,26 @@ public class InputPollingSample implements ApplicationListener, InputProcessor {
     private SpriteBatch batch;
     private BitmapFont font;
 
+    private static void debugReflection(Class<?> clazz) {
+        Field[] fields = ClassReflection.getDeclaredFields(clazz);
+        Method[] methods = ClassReflection.getDeclaredMethods(clazz);
+
+        log.debug("== debug reflection class = " + clazz.getName());
+        log.debug("fields-count= " + fields.length);
+
+        for (Field field : fields) {
+            log.debug("name = " + field.getName() + " type = " + field.getType());
+        }
+
+        log.debug("methods-count= " + methods.length);
+
+        for (Method method : methods) {
+            log.debug("name= " + method.getName() + " parameterType= " + Arrays.asList(method.getParameterTypes()));
+        }
+
+        log.debug("=========");
+    }
+
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -36,14 +59,7 @@ public class InputPollingSample implements ApplicationListener, InputProcessor {
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("fonts/oswald-32.fnt"));
 
-        Gdx.input.setInputProcessor(new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode) {
-                log.debug("keyDown keycode= " + keycode);
-                return true;
-            }
-
-        });
+        debugReflection(GdxReflectionSample.class);
     }
 
     @Override
@@ -54,16 +70,7 @@ public class InputPollingSample implements ApplicationListener, InputProcessor {
 
     @Override
     public void render() {
-        // clear screen
-        Gdx.gl.glClearColor(0, 0, 0, 1.0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-
-        draw();
-
-        batch.end();
     }
 
     private void draw() {

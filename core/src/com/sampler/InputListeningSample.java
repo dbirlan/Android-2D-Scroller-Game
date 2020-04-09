@@ -11,8 +11,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class InputPollingSample implements ApplicationListener {
+public class InputListeningSample implements ApplicationListener {
 
+    // private static final Logger log = new Logger(InputListeningSample.class.getName(), Logger.DEBUG);
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch batch;
