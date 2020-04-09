@@ -3,21 +3,29 @@ package com.sampler;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class InputListeningSample implements ApplicationListener {
+public class InputListeningSample implements ApplicationListener, InputProcessor {
 
-    // private static final Logger log = new Logger(InputListeningSample.class.getName(), Logger.DEBUG);
+    private static final Logger log = new Logger(InputListeningSample.class.getName(), Logger.DEBUG);
+
+    private static final int MAX_MESSAGE_COUNT = 15;
+
+    private final Array<String> messages = new Array<String>();
+
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch batch;
     private BitmapFont font;
+
 
     @Override
     public void create() {
@@ -28,12 +36,12 @@ public class InputListeningSample implements ApplicationListener {
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("fonts/oswald-32.fnt"));
 
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
-
     }
 
     @Override
@@ -51,43 +59,20 @@ public class InputListeningSample implements ApplicationListener {
     }
 
     private void draw() {
-        //mouse/touch x/y coordinates
-        int mouseX = Gdx.input.getX();
-        int mouseY = Gdx.input.getY();
+        for (int i = 0; i < messages.size; i++) {
+            font.draw(batch, messages.get(i),
+                    20.0f,
+                    720 - 40.0f * (i + 1)
+            );
+        }
+    }
 
-        //Buttons
-        boolean leftPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-        boolean rightPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+    private void addMessage(String message) {
+        messages.add(message);
 
-        font.draw(batch,
-                "Mouse/Touch : x" + mouseX + "y= " + mouseY,
-                20f,
-                720 - 20f);
-
-        font.draw(batch,
-                leftPressed ? "Left button pressed" : "Left button not pressed",
-                20f,
-                720 - 50f);
-
-
-        font.draw(batch,
-                rightPressed ? "Right button pressed" : "Right button not pressed",
-                20f,
-                720 - 80f);
-
-        //Keys
-        boolean wPressed = Gdx.input.isKeyPressed(Input.Keys.W);
-        boolean sPressed = Gdx.input.isKeyPressed(Input.Keys.S);
-
-        font.draw(batch,
-                wPressed ? "W is pressed" : "W is not pressed",
-                20f,
-                720 - 110f);
-
-        font.draw(batch,
-                sPressed ? "S pressed" : "S is not pressed",
-                20f,
-                720 - 140f);
+        if (messages.size > MAX_MESSAGE_COUNT) {
+            messages.removeIndex(0);
+        }
     }
 
     @Override
@@ -104,5 +89,69 @@ public class InputListeningSample implements ApplicationListener {
     public void dispose() {
         batch.dispose();
         font.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        String message = "keyDown keycode= " + keycode;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        String message = "keyUp keycode= " + keycode;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        String message = "keyTyped keycode= " + character;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        String message = "touchDown screenX= " + screenX + " screenY= " + screenY;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        String message = "touchUp screenX= " + screenX + " screenY= " + screenY;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        String message = "touchDragged screenX= " + screenX + " screenY= " + screenY;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        String message = "mouseMoved screenX= " + screenX + " screenY= " + screenY;
+        log.debug(message);
+        addMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        String message = "scrolled amount= " + amount;
+        log.debug(message);
+        addMessage(message);
+        return true;
     }
 }
